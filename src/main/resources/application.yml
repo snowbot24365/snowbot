@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: snowbot
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+      additional-paths: src/main/resources/
+  datasource:
+    url: 
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: 
+    password: 
+
+webhook:
+  slack:
+    url: https://hooks.slack.com/services/
+
+krx:
+  key: 
+  kospi:
+    url: https://data-dbg.krx.co.kr/svc/apis/sto/stk_isu_base_info
+  kosdaq:
+    url: https://data-dbg.krx.co.kr/svc/apis/sto/ksq_isu_base_info
+
+kis:
+  ## 모의계좌 (거래 테스트시 사용)
+  auth:
+    appkey: 
+    appsecret: 
+  account-no: 
+  account-cd:   
+  ## 실전계좌 (데이터 수집시 사용)
+  # auth:
+  #   appkey: 
+  #   appsecret: 
+  # account-no: (실전계좌번호)
+  # account-cd: "01"     
+
+snowbot:
+  trading:
+    contract-rate: 0.1  # 1회 매수 시 예수금 대비 비율 (0.1 = 10%)
+    limit-price: 500000   # 종목당 최대 보유 한도 금액
+    limit-cnt: 20     # 최대 보유 종목 수
+    # 매수 관련 설정
+    buy:
+      use-yn: Y       # 매수 로직 동작 여부 (Y/N)
+      test-force-buy: N # 강제 매수 테스트 플래그 (Y일 경우 조건 무시하고 매수)
+    # 매도 관련 설정
+    sell:
+      up-rate: 10.0     # 익절 기준 수익률 (%)
+      down-rate: -20.0  # 손절 기준 수익률 (%)
+      use-loss-cut: Y   # 손절 기능 사용 여부 (Y/N) - 안전을 위해 기본값 Y 권장
+      hold-rate: 0.8    # 매도 보류 비율 (목표 매수 금액의 80% 미만 보유 시 매도 보류)
+      test-force-sell: N  # 강제 매도 테스트 플래그 (Y일 경우 조건 무시하고 매도)
