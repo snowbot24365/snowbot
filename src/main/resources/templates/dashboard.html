@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snowbot - 통합 대시보드</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-snowflake"></i> Snowbot Trading Dashboard
+            </a>
+            <span class="navbar-text text-white">
+                <i class="far fa-clock"></i> <span id="currentTime"></span>
+            </span>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card summary-card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">보유 종목 수</h6>
+                                <h3 class="card-title mb-0" th:text="${dashboard.totalHoldingCount} + '개'">0개</h3>
+                            </div>
+                            <div class="summary-icon">
+                                <i class="fas fa-chart-pie fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card summary-card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">총 평가 금액</h6>
+                                <h3 class="card-title mb-0" th:text="${#numbers.formatInteger(dashboard.totalEvaluationAmt, 0, 'COMMA')} + '원'">0원</h3>
+                            </div>
+                            <div class="summary-icon">
+                                <i class="fas fa-coins fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card summary-card text-white"
+                     th:classappend="${dashboard.totalProfitLossAmt >= 0} ? 'bg-danger' : 'bg-info'">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">평가 손익</h6>
+                                <h3 class="card-title mb-0" th:text="${#numbers.formatInteger(dashboard.totalProfitLossAmt, 0, 'COMMA')} + '원'">0원</h3>
+                            </div>
+                            <div class="summary-icon">
+                                <i class="fas fa-won-sign fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card summary-card text-white"
+                     th:classappend="${dashboard.totalProfitLossRate >= 0} ? 'bg-danger' : 'bg-info'">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-subtitle mb-2">수익률</h6>
+                                <h3 class="card-title mb-0" th:text="${#numbers.formatDecimal(dashboard.totalProfitLossRate, 1, 2)} + '%'">0%</h3>
+                            </div>
+                            <div class="summary-icon">
+                                <i class="fas fa-percentage fa-3x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <ul class="nav nav-tabs" id="dashboardTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="scoring-tab" data-bs-toggle="tab" data-bs-target="#scoring"
+                        type="button" role="tab" aria-controls="scoring" aria-selected="true">
+                    <i class="fas fa-trophy"></i> 매수 대상 종목
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="buying-tab" data-bs-toggle="tab" data-bs-target="#buying"
+                        type="button" role="tab" aria-controls="buying" aria-selected="false">
+                    <i class="fas fa-shopping-cart"></i> 분할 매수 진행
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio"
+                        type="button" role="tab" aria-controls="portfolio" aria-selected="false">
+                    <i class="fas fa-wallet"></i> 보유 현황
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings"
+                        type="button" role="tab" aria-controls="settings" aria-selected="false">
+                    <i class="fas fa-cog"></i> 트레이딩 설정
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="dashboardTabContent">
+            <!-- 1. 매수 대상 종목 조회 -->
+            <div class="tab-pane fade show active" id="scoring" role="tabpanel" aria-labelledby="scoring-tab">
+                <div class="card mt-3">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-trophy"></i> 스코어링 결과 - 매수 대상 종목</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>순위</th>
+                                        <th>종목코드</th>
+                                        <th>종목명</th>
+                                        <th>스코어</th>
+                                        <th>현재가</th>
+                                        <th>선정일자</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(dashboard.scoringResults)}">
+                                        <td colspan="6" class="text-center text-muted">조회된 데이터가 없습니다.</td>
+                                    </tr>
+                                    <tr th:each="item : ${dashboard.scoringResults}">
+                                        <td><span class="badge bg-secondary" th:text="${item.rank}">1</span></td>
+                                        <td th:text="${item.itemCd}">005930</td>
+                                        <td><strong th:text="${item.itemNm}">삼성전자</strong></td>
+                                        <td><span class="badge bg-primary" th:text="${item.totalScore}">85</span></td>
+                                        <td th:text="${#numbers.formatInteger(item.currentPrice, 0, 'COMMA')} + '원'">70,000원</td>
+                                        <td th:text="${item.selectDate}">20231201</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 분할 매수 진행 종목 -->
+            <div class="tab-pane fade" id="buying" role="tabpanel" aria-labelledby="buying-tab">
+                <div class="card mt-3">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0"><i class="fas fa-shopping-cart"></i> 현재 분할 매수 진행 중인 종목</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>종목코드</th>
+                                        <th>종목명</th>
+                                        <th>현재 수량</th>
+                                        <th>목표 수량</th>
+                                        <th>진행률</th>
+                                        <th>평균단가</th>
+                                        <th>현재가</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(dashboard.buyingProcesses)}">
+                                        <td colspan="7" class="text-center text-muted">진행 중인 매수가 없습니다.</td>
+                                    </tr>
+                                    <tr th:each="item : ${dashboard.buyingProcesses}">
+                                        <td th:text="${item.itemCd}">005930</td>
+                                        <td><strong th:text="${item.itemNm}">삼성전자</strong></td>
+                                        <td th:text="${#numbers.formatInteger(item.currentQty, 0, 'COMMA')} + '주'">5주</td>
+                                        <td th:text="${#numbers.formatInteger(item.targetQty, 0, 'COMMA')} + '주'">10주</td>
+                                        <td>
+                                            <div class="progress" style="height: 25px;">
+                                                <div class="progress-bar bg-warning" role="progressbar"
+                                                     th:style="'width: ' + ${item.progressRate} + '%'"
+                                                     th:attr="aria-valuenow=${item.progressRate}"
+                                                     aria-valuemin="0" aria-valuemax="100">
+                                                    <span th:text="${#numbers.formatDecimal(item.progressRate, 1, 1)} + '%'">50%</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td th:text="${#numbers.formatInteger(item.avgPrice, 0, 'COMMA')} + '원'">68,000원</td>
+                                        <td th:text="${#numbers.formatInteger(item.currentPrice, 0, 'COMMA')} + '원'">70,000원</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 보유 현황 및 수익률 -->
+            <div class="tab-pane fade" id="portfolio" role="tabpanel" aria-labelledby="portfolio-tab">
+                <div class="card mt-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-wallet"></i> 보유 현황 및 수익률</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>종목코드</th>
+                                        <th>종목명</th>
+                                        <th>평균단가</th>
+                                        <th>현재가</th>
+                                        <th>보유수량</th>
+                                        <th>평가금액</th>
+                                        <th>평가손익</th>
+                                        <th>수익률</th>
+                                        <th>매수일</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(dashboard.portfolios)}">
+                                        <td colspan="9" class="text-center text-muted">보유 종목이 없습니다.</td>
+                                    </tr>
+                                    <tr th:each="item : ${dashboard.portfolios}">
+                                        <td th:text="${item.itemCd}">005930</td>
+                                        <td><strong th:text="${item.itemNm}">삼성전자</strong></td>
+                                        <td th:text="${#numbers.formatInteger(item.avgPrice, 0, 'COMMA')} + '원'">68,000원</td>
+                                        <td th:text="${#numbers.formatInteger(item.currentPrice, 0, 'COMMA')} + '원'">70,000원</td>
+                                        <td th:text="${#numbers.formatInteger(item.qty, 0, 'COMMA')} + '주'">10주</td>
+                                        <td th:text="${#numbers.formatInteger(item.evaluationAmt, 0, 'COMMA')} + '원'">700,000원</td>
+                                        <td th:text="${#numbers.formatInteger(item.profitLossAmt, 0, 'COMMA')} + '원'"
+                                            th:classappend="${item.profitLossAmt >= 0} ? 'text-danger fw-bold' : 'text-primary fw-bold'">
+                                            +20,000원
+                                        </td>
+                                        <td th:text="${#numbers.formatDecimal(item.profitLossRate, 1, 2)} + '%'"
+                                            th:classappend="${item.profitLossRate >= 0} ? 'text-danger fw-bold' : 'text-primary fw-bold'">
+                                            +2.94%
+                                        </td>
+                                        <td th:text="${item.buyDate}">20231201</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 트레이딩 설정 -->
+            <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                <div class="card mt-3">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-cog"></i> 트레이딩 전략 설정</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="row">
+                                <!-- 기본 설정 -->
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-sliders-h"></i> 기본 설정</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">1회 매수 비율 (예수금 대비)</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control"
+                                                           th:value="${dashboard.tradingSettings.contractRate}"
+                                                           step="0.01" readonly>
+                                                    <span class="input-group-text">배율</span>
+                                                </div>
+                                                <small class="form-text text-muted">예수금의 몇 배까지 매수할지 설정 (0.1 = 10%)</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">종목당 최대 보유 금액</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control"
+                                                           th:value="${dashboard.tradingSettings.limitPrice}" readonly>
+                                                    <span class="input-group-text">원</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">최대 보유 종목 수</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control"
+                                                           th:value="${dashboard.tradingSettings.limitCnt}" readonly>
+                                                    <span class="input-group-text">개</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 매수 설정 -->
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0"><i class="fas fa-arrow-down"></i> 매수 설정</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">매수 로직 동작 여부</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           th:checked="${dashboard.tradingSettings.buyUseYn == 'Y'}" disabled>
+                                                    <label class="form-check-label" th:text="${dashboard.tradingSettings.buyUseYn == 'Y' ? '활성화' : '비활성화'}">
+                                                        활성화
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">강제 매수 테스트</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                           th:checked="${dashboard.tradingSettings.testForceBuy == 'Y'}" disabled>
+                                                    <label class="form-check-label" th:text="${dashboard.tradingSettings.testForceBuy == 'Y' ? 'ON' : 'OFF'}">
+                                                        OFF
+                                                    </label>
+                                                </div>
+                                                <small class="form-text text-muted">테스트 목적으로 조건 무시하고 매수</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 매도 설정 -->
+                                <div class="col-md-12">
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-danger text-white">
+                                            <h6 class="mb-0"><i class="fas fa-arrow-up"></i> 매도 설정</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">익절 기준 수익률</label>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control"
+                                                                   th:value="${dashboard.tradingSettings.sellUpRate}"
+                                                                   step="0.1" readonly>
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">손절 기준 수익률</label>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control"
+                                                                   th:value="${dashboard.tradingSettings.sellDownRate}"
+                                                                   step="0.1" readonly>
+                                                            <span class="input-group-text">%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">매도 보류 비율</label>
+                                                        <div class="input-group">
+                                                            <input type="number" class="form-control"
+                                                                   th:value="${dashboard.tradingSettings.holdRate}"
+                                                                   step="0.01" readonly>
+                                                            <span class="input-group-text">배율</span>
+                                                        </div>
+                                                        <small class="form-text text-muted">목표 금액의 80% 미만 보유 시 매도 보류</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">손절 기능 사용</label>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   th:checked="${dashboard.tradingSettings.useLossCut == 'Y'}" disabled>
+                                                            <label class="form-check-label" th:text="${dashboard.tradingSettings.useLossCut == 'Y' ? '사용' : '미사용'}">
+                                                                사용
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">강제 매도 테스트</label>
+                                                        <div class="form-check form-switch">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   th:checked="${dashboard.tradingSettings.testForceSell == 'Y'}" disabled>
+                                                            <label class="form-check-label" th:text="${dashboard.tradingSettings.testForceSell == 'Y' ? 'ON' : 'OFF'}">
+                                                                OFF
+                                                            </label>
+                                                        </div>
+                                                        <small class="form-text text-muted">테스트 목적으로 조건 무시하고 매도</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle"></i>
+                                설정 변경은 <code>application.yml</code> 파일을 수정한 후 애플리케이션을 재시작하세요.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script th:inline="javascript">
+        // 현재 시간 업데이트
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 자동 새로고침 (옵션: 5분마다)
+        // setInterval(() => {
+        //     location.reload();
+        // }, 300000);
+    </script>
+</body>
+</html>

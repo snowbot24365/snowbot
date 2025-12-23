@@ -1,0 +1,296 @@
+/* ==========================================
+   Snowbot Dashboard - Custom Styles
+   ========================================== */
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand i {
+    color: #00d4ff;
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Summary Cards */
+.summary-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,.15);
+}
+
+.summary-card .card-body {
+    padding: 1.5rem;
+}
+
+.summary-card .card-subtitle {
+    opacity: 0.9;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-card .card-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.summary-icon {
+    opacity: 0.3;
+}
+
+/* Tab Styles */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #fff;
+    color: #0d6efd;
+    border-bottom: 3px solid #0d6efd;
+    font-weight: 600;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 5px;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    border: none;
+    margin-bottom: 20px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    padding: 15px 20px;
+}
+
+.card-header h5, .card-header h6 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Table Styles */
+.table-responsive {
+    border-radius: 5px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 12px;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 12px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+/* Profit/Loss Text Colors */
+.text-profit {
+    color: #dc3545 !important; /* 빨간색 (수익) */
+    font-weight: bold;
+}
+
+.text-loss {
+    color: #0d6efd !important; /* 파란색 (손실) */
+    font-weight: bold;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 6px 12px;
+    font-weight: 500;
+}
+
+/* Progress Bar */
+.progress {
+    border-radius: 5px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Form Styles */
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+.form-check-input:disabled {
+    opacity: 0.7;
+}
+
+.input-group-text {
+    background-color: #e9ecef;
+    font-weight: 500;
+}
+
+/* Alert Styles */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-pane {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .summary-card .card-title {
+        font-size: 1.4rem;
+    }
+
+    .summary-icon {
+        display: none;
+    }
+
+    .nav-tabs .nav-link {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+    }
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 8px;
+    }
+}
+
+/* Loading Spinner (optional) */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Error Message */
+.error-message {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    color: #721c24;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Code Tag */
+code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: #d63384;
+    font-size: 0.9em;
+}
