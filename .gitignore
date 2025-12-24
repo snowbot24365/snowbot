@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+token.txt
+application.yml
+/wallet/
