@@ -44,13 +44,13 @@ public class CollectorController {
     @GetMapping("/addkospi")
     public ResponseEntity<String> insertEquitiesKospi() {
         log.info("Execute insertEquities Start");
-        slackService.sendMessage("Execute insertEquitiesKospi Start");
+        slackService.sendMessage("Execute2 insertEquitiesKospi Start");
         
         // KOSPI 시장 종목 수집을 시작한다.
         insertEquitiesByMarket("KOSPI");
         
         log.info("Execute insertEquities End");
-        slackService.sendMessage("Execute insertEquitiesKospi End");
+        slackService.sendMessage("Execute2 insertEquitiesKospi End");
         return ResponseEntity.status(HttpStatus.OK).body("Execute insertEquitiesKospi End");
     }
 
@@ -60,13 +60,13 @@ public class CollectorController {
     @Scheduled(cron = "0 0 16 * * *", zone = "Asia/Seoul") // Executes at 16:00 PM every day
     @GetMapping("/addkosdaq")
     public ResponseEntity<String> insertEquitiesKosdaq() {
-        log.info("Execute insertEquities Start");
+        log.info("Execute2 insertEquities Start");
         slackService.sendMessage("Execute insertEquitiesKosdaq Start");
         
         // KOSDAQ 시장 종목 수집을 시작한다.
         insertEquitiesByMarket("KOSDAQ");
         
-        log.info("Execute insertEquities End");
+        log.info("Execute2 insertEquities End");
         slackService.sendMessage("Execute insertEquitiesKosdaq End");
         return ResponseEntity.status(HttpStatus.OK).body("Execute insertEquitiesKosdaq End");
     }

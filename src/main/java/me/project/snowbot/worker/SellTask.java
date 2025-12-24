@@ -61,7 +61,7 @@ public class SellTask {
     /**
      * 매일 장 운영 시간(09:00 ~ 15:59) 동안 30초 간격으로 매도 조건을 점검한다.
      */
-    @Scheduled(cron = "*/30 0-59 9-15 * * *", zone = "Asia/Seoul")
+    // @Scheduled(cron = "*/30 0-59 9-15 * * *", zone = "Asia/Seoul")
     public void execSellTask() {
         // 1. 현재 보유 중인 스윙(SW) 종목 리스트를 조회한다.
         List<TradeStatus> tradeStatusList = tradeStatusService.getBoughtSWItem(CustomDateUtils.getStringToday());

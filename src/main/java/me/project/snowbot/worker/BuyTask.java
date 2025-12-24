@@ -56,7 +56,7 @@ public class BuyTask {
      * 매일 오전 9시부터 오후 3시 59분 59초까지, 30초 간격으로 매수 작업을 실행한다.
      * 장 운영 시간(09:00 ~ 15:30)을 커버하며, 장 마감 직후 데이터 정리까지 고려된 시간이다.
      */
-    @Scheduled(cron = "*/30 0-59 9-15 * * *", zone = "Asia/Seoul")
+    // @Scheduled(cron = "*/30 0-59 9-15 * * *", zone = "Asia/Seoul")
     public void execBuyTask() {
         // 1. 계좌의 예수금 잔고를 확인한다. 잔고가 없으면 로직을 수행하지 않는다.
         int currentBalance = workerService.getAccountBalance();
