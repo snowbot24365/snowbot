@@ -61,7 +61,7 @@ public class DashboardService {
      * 전체 대시보드 데이터 조회
      */
     public DashboardDto getDashboardData() {
-        String today = CustomDateUtils.getToday();
+        String today = CustomDateUtils.getStringToday();
 
         List<ScoringResultDto> scoringResults = getScoringResults(today);
         List<BuyingProcessDto> buyingProcesses = getBuyingProcesses(today);

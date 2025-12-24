@@ -43,7 +43,7 @@ public class DashboardController {
     @GetMapping("/api/scoring-results")
     @ResponseBody
     public List<ScoringResultDto> getScoringResults(@RequestParam(required = false) String date) {
-        return dashboardService.getScoringResults(date != null ? date : me.project.snowbot.util.CustomDateUtils.getToday());
+        return dashboardService.getScoringResults(date != null ? date : me.project.snowbot.util.CustomDateUtils.getStringToday());
     }
 
     /**
@@ -52,7 +52,7 @@ public class DashboardController {
     @GetMapping("/api/buying-processes")
     @ResponseBody
     public List<BuyingProcessDto> getBuyingProcesses(@RequestParam(required = false) String date) {
-        return dashboardService.getBuyingProcesses(date != null ? date : me.project.snowbot.util.CustomDateUtils.getToday());
+        return dashboardService.getBuyingProcesses(date != null ? date : me.project.snowbot.util.CustomDateUtils.getStringToday());
     }
 
     /**
@@ -61,7 +61,7 @@ public class DashboardController {
     @GetMapping("/api/portfolios")
     @ResponseBody
     public List<PortfolioDto> getPortfolios(@RequestParam(required = false) String date) {
-        return dashboardService.getPortfolios(date != null ? date : me.project.snowbot.util.CustomDateUtils.getToday());
+        return dashboardService.getPortfolios(date != null ? date : me.project.snowbot.util.CustomDateUtils.getStringToday());
     }
 
     /**
