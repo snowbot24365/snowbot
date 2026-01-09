@@ -350,12 +350,7 @@ class SettingsManager:
             return f"sqlite:///{db_path}"
         else:
             # Oracle ATP 연결 (oracledb 사용)
-            # Python 3.12+ 에서는 oracledb 사용
-            import sys
-            if sys.version_info >= (3, 12):
-                dialect = "oracle+oracledb"
-            else:
-                dialect = "oracle+cx_oracle"
+            dialect = "oracle+oracledb"
             
             return (
                 f"{dialect}://{self._settings.database.oracle_user}:"

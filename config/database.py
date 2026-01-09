@@ -304,6 +304,8 @@ class DatabaseManager:
                     echo=False,
                     pool_size=5,
                     max_overflow=10,
+                    pool_recycle=1800,   # 30분(1800초)마다 연결 재생성 (타임아웃 방지)
+                    pool_pre_ping=True,  # 쿼리 실행 전 연결 상태 확인 (죽은 연결 자동 복구)
                     connect_args=connect_args
                 )
 

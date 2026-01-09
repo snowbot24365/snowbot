@@ -7,7 +7,7 @@
 
 import logging
 import random
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import List, Dict, Optional, Callable
 import time
 
@@ -302,7 +302,12 @@ class DataCollectionService:
         - DB 상태에 따라 초기화(Full) 또는 이어하기(Incremental) 자동 처리
         """
         if base_date is None:
-            base_date = date.today()
+            now = datetime.now()
+            # 새벽(0시~8시)에 실행되면, '오늘'이 아니라 '어제' 데이터를 수집하도록 처리
+            if now.hour < 9:
+                base_date = (now - timedelta(days=1)).date()
+            else:
+                base_date = now.date()
         
         base_date_str = base_date.strftime('%Y%m%d')
         
